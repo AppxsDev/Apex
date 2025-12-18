@@ -17,7 +17,7 @@ class ChatRepositoryImpl(
     private val localChat: LocalChatDataSource,
     private val secureTime: SecureTimeDataSource
 ) : ChatRepository {
-    override suspend fun createConversation(title: String?): Long {
+    override suspend fun createConversation(title: String?) {
         return localChat.createConversation(ConversationEntity(
             title = title,
             createdAt = secureTime.getCurrentTimeInMillis(),
@@ -30,15 +30,15 @@ class ChatRepositoryImpl(
             .map { entities -> entities.map { it.toDomain() } }
     }
 
-    override suspend fun updateConversation(conversation: Conversation): Conversation? {
-        return localChat.updateConversation(conversation.toEntity())?.toDomain()
+    override suspend fun updateConversation(conversation: Conversation) {
+        return localChat.updateConversation(conversation.toEntity())
     }
 
     override suspend fun deleteConversation(conversation: Conversation) {
         return localChat.deleteConversation(conversation.toEntity())
     }
 
-    override suspend fun insertMessage(text: String, conversationId: Long): Long {
+    override suspend fun insertMessage(text: String, conversationId: Long) {
         return localChat.insertMessage(MessageEntity(
             conversationId = conversationId,
             text = text,

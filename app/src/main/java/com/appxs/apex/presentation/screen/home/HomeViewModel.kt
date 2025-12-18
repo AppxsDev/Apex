@@ -8,7 +8,7 @@ import com.appxs.apex.domain.usecase.chat.DeleteConversationUseCase
 import com.appxs.apex.domain.usecase.chat.GetConversationsUseCase
 import com.appxs.apex.domain.usecase.chat.GetMessagesUseCase
 import com.appxs.apex.domain.usecase.chat.SendMessageUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,9 +16,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val getConversations: GetConversationsUseCase,
     private val getMessages: GetMessagesUseCase,
     private val createConversation: CreateConversationUseCase,
@@ -74,7 +75,7 @@ class HomeViewModel(
 
     private fun createNewChat() = viewModelScope.launch {
         val id = createConversation(title = null)
-        selectConversation(id)
+        selectConversation(0)
     }
 
     private fun deleteChat(conversation: Conversation) = viewModelScope.launch {
