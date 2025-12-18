@@ -4,11 +4,14 @@ import com.appxs.apex.core.time.SecureTimeDataSource
 import com.appxs.apex.data.datasource.local.LocalChatDataSource
 import com.appxs.apex.data.datasource.local.entity.ConversationEntity
 import com.appxs.apex.data.datasource.local.entity.MessageEntity
+import com.appxs.apex.data.mapper.toDomain
 import com.appxs.apex.data.mapper.toEntity
 import com.appxs.apex.domain.model.Conversation
+import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ChatRepositoryImpl(
     private val localChat: LocalChatDataSource,
@@ -22,12 +25,13 @@ class ChatRepositoryImpl(
         ))
     }
 
-    override fun getAllConversations(): Flow<List<ConversationEntity>> {
+    override fun getAllConversations(): Flow<List<Conversation>> {
         return localChat.getAllConversations()
+            .map { entities -> entities.map { it.toDomain() } }
     }
 
-    override suspend fun updateConversation(conversation: Conversation): ConversationEntity? {
-        return localChat.updateConversation(conversation.toEntity())
+    override suspend fun updateConversation(conversation: Conversation): Conversation? {
+        return localChat.updateConversation(conversation.toEntity())?.toDomain()
     }
 
     override suspend fun deleteConversation(conversation: Conversation) {
@@ -43,7 +47,8 @@ class ChatRepositoryImpl(
         ))
     }
 
-    override fun getAllMessagesFromConversation(conversationId: Long): Flow<List<MessageEntity>> {
+    override fun getAllMessagesFromConversation(conversationId: Long): Flow<List<Message>> {
         return localChat.getAllMessagesOfConversation(conversationId)
+            .map { entities -> entities.map { it.toDomain() } }
     }
 }
