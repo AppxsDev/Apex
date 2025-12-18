@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.appxs.apex.data.datasource.local.entity.ConversationEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,10 +15,10 @@ interface ConversationDao {
     suspend fun insert(entity: ConversationEntity): Long
 
     @Query("SELECT * FROM conversations ORDER BY lastMessageAt DESC")
-    fun observeAll(): Flow<List<ConversationEntity>>
+    fun getAll(): Flow<List<ConversationEntity>>
 
-    @Query("SELECT * FROM conversations WHERE id = :id")
-    suspend fun getById(id: Long): ConversationEntity?
+    @Update
+    suspend fun update(entity: ConversationEntity): ConversationEntity?
 
     @Delete
     suspend fun delete(entity: ConversationEntity)
