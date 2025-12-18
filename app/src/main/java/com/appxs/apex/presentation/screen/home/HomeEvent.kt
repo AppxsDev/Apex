@@ -6,7 +6,4 @@ sealed interface HomeEvent {
     data object NewChatClicked : HomeEvent
     data class ConversationSelected(val id: Long) : HomeEvent
     data class DeleteConversation(val conversation: Conversation) : HomeEvent
-
-    data class InputChanged(val text: String) : HomeEvent
-    data object SendClicked : HomeEvent
 }
