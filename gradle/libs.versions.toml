@@ -12,6 +12,7 @@ appcompat = "1.6.1"
 lifecycleRuntimeCompose = "2.8.0"
 lifecycleViewmodelCompose = "2.8.6"
 lifecycleViewmodelKtx = "2.10.0"
+lottieCompose = "6.7.1"
 material = "1.10.0"
 roomCompiler = "2.8.4"
 roomCompilerVersion = "2.6.1"
@@ -40,6 +41,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }

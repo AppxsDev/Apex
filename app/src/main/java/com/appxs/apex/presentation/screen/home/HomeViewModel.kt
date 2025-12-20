@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.emptyList
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -54,7 +53,7 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: HomeEvent) {
         when (event) {
             HomeEvent.NewChatClicked -> createChat()
-            is HomeEvent.ConversationSelected -> selectConversation(event.id)
+            is HomeEvent.ConversationSelected -> selectConversation(event.conversationId)
             is HomeEvent.DeleteConversation -> deleteChat(event.conversation)
 
            // is HomeEvent.InputChanged -> _state.update { it.copy(inputText = event.text) }

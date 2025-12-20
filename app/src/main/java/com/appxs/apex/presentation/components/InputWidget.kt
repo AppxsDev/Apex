@@ -90,11 +90,11 @@ fun InputTextWidget() {
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.hsl(0F, 0F, .95F)),
+                textStyle = TextStyle.Default.copy(fontSize = 14.sp, color = Color.hsl(0F, 0F, .95F)),
                 value = input,
                 singleLine = true,
                 placeholder = { Text("Ask to Apex...",
-                    style = TextStyle.Default.copy(fontSize = 12.sp, color = Color.hsl(0F, 0F, .65F))) },
+                    style = TextStyle.Default.copy(fontSize = 14.sp, color = Color.hsl(0F, 0F, .65F))) },
                 onValueChange = {
                     input = it
                 }
