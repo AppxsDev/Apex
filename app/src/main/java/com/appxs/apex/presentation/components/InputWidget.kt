@@ -21,12 +21,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +69,7 @@ fun InputWidget() {
 @Composable
 fun InputTextWidget() {
     var input by rememberSaveable { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
@@ -83,6 +88,7 @@ fun InputTextWidget() {
         ) {
             TextField(
                 modifier = Modifier
+                    .focusRequester(focusRequester)
                     .weight(1f)
                     .height(48.dp),
                 colors = TextFieldDefaults.textFieldColors(
@@ -101,6 +107,10 @@ fun InputTextWidget() {
             )
             Icon(imageVector = Icons.AutoMirrored.Rounded.Send, contentDescription = "Send", tint = Color.hsl(0F, 0F, .9F))
         }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 

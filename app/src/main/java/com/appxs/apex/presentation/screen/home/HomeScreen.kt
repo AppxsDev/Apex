@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -47,6 +48,7 @@ fun HomeScreen(
         onConversationClick = { onEvent(HomeEvent.ConversationSelected(it.id)) }
     ) {
         Scaffold(
+            modifier = Modifier.imePadding(),
             contentWindowInsets = WindowInsets(0), // <-- important: keep topBar pinned
             topBar = {
                 TopAppBar(
@@ -70,19 +72,12 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .weight(1f)
+                        .imePadding()
                         .fillMaxWidth()
                 ) {
                     NewChatScreen(modifier = Modifier.fillMaxSize())
                 }
-
-                // Only the input follows the keyboard
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .imePadding()
-                ) {
-                    InputWidget()
-                }
+                InputWidget()
             }
         }
     }

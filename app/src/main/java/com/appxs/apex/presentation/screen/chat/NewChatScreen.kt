@@ -2,8 +2,10 @@ package com.appxs.apex.presentation.screen.chat
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +35,9 @@ fun NewChatScreen(modifier: Modifier = Modifier) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.offset(y = (-75).dp)
+            modifier = Modifier
+                .offset(y = (-50).dp)
+                .padding(horizontal = 32.dp),
         ) {
             LottieAnimation(
                 composition = composition,
@@ -41,12 +45,13 @@ fun NewChatScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(150.dp)
             )
             Text(
-                text = "Welcome to Apex AI",
+                text = "Apex AI. The Future of AI is here",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.size(8.dp))
             Text(
-                text = "I am a powerful AI assistant that can help you with a variety of tasks.",
+                text = "I am a powerful AI assistant that can help you with a variety of tasks. Any question? Just write it and I'll help you.",
                 fontSize = 14.sp,
                 color = Color.hsl(0F, 0F, .65F),
                 textAlign = TextAlign.Center
