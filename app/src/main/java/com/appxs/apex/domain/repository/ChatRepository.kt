@@ -5,7 +5,7 @@ import com.appxs.apex.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
-    suspend fun createConversation(title: String?) : Conversation
+    suspend fun createConversation(title: String?, firstMessage: String) : Conversation
     fun getAllConversations() : Flow<List<Conversation>>
     suspend fun updateConversation(conversation: Conversation)
     suspend fun deleteConversation(conversation: Conversation)

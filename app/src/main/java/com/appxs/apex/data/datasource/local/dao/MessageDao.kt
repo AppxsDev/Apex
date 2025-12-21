@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface MessageDao {
 
     @Insert
-    suspend fun insert(entity: MessageEntity)
+    suspend fun insert(entity: MessageEntity) : Long
 
     @Query("SELECT * FROM messages WHERE conversationId = :conversationId ORDER BY timestamp DESC")
     fun getAllOfConversation(conversationId: Long): Flow<List<MessageEntity>>

@@ -17,14 +17,16 @@ class ChatRepositoryImpl(
     private val localChat: LocalChatDataSource,
     private val secureTime: SecureTimeDataSource
 ) : ChatRepository {
-    override suspend fun createConversation(title: String?): Conversation {
+    override suspend fun createConversation(title: String?, firstMessage: String): Conversation {
         val conversation = ConversationEntity(
             title = title,
             createdAt = secureTime.getCurrentTimeInMillis(),
             lastMessageAt = secureTime.getCurrentTimeInMillis()
         )
 
-        localChat.createConversation(conversation)
+        val newConversationId = localChat.createConversation(conversation)
+        insertMessage(firstMessage, newConversationId)
+
         return conversation.toDomain()
     }
 
@@ -42,14 +44,14 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun insertMessage(text: String, conversationId: Long): Message {
-        val message = MessageEntity(
+        var message = MessageEntity(
             conversationId = conversationId,
             text = text,
             sender = Sender.User.toString(),
             timestamp = secureTime.getCurrentTimeInMillis(),
         )
 
-        localChat.insertMessage(message)
+        val newMessageId = localChat.createMessage(message)
         return message.toDomain()
     }
 

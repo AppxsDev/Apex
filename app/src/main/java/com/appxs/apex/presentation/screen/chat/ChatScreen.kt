@@ -11,21 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.presentation.components.InputWidget
 import com.appxs.apex.presentation.components.MessageBubble
+import com.appxs.apex.presentation.screen.home.HomeEvent
 import com.appxs.apex.presentation.ui.theme.ApexTheme
 
 @Composable
 fun ChatScreen(
-    state: ChatState) {
+    state: ChatState,
+    onEvent: (ChatEvent) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LazyColumn (
+            reverseLayout = true,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .weight(1F)
         ) {
@@ -39,7 +45,7 @@ fun ChatScreen(
             }
         }
         InputWidget(
-            onSend = { message -> }
+            onSend = { message -> onEvent(ChatEvent.MessageSent(message))}
         )
     }
 }
@@ -49,6 +55,7 @@ fun ChatScreen(
 private fun ChatScreenPreview() {
     ApexTheme(darkTheme = true) {
         ChatScreen(
+            onEvent = {},
             state = ChatState(
                 messages = listOf(
                     Message(id = 1, conversationId = 1, text = "Hello", sender = Sender.User, timestamp = 0),
@@ -56,7 +63,7 @@ private fun ChatScreenPreview() {
                     Message(id = 3, conversationId = 1, text = "How are you?", sender = Sender.User, timestamp = 10),
                     Message(id = 4, conversationId = 1, text = "Fine and you?", sender = Sender.Ai, timestamp = 10)
                 )
-            ),
+            )
         )
     }
 }

@@ -25,7 +25,9 @@ import com.appxs.apex.R
 import com.appxs.apex.presentation.components.InputWidget
 
 @Composable
-fun NewChatScreen() {
+fun NewChatScreen(
+    onSend: (message: String) -> Unit
+) {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.apex_logo))
 
@@ -61,7 +63,7 @@ fun NewChatScreen() {
             )
         }
         InputWidget(
-            onSend = { message -> }
+            onSend = onSend
         )
     }
 }

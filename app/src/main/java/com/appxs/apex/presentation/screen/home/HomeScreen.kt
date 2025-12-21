@@ -78,7 +78,11 @@ fun HomeScreen(
                         ChatRoute(
                             conversationId = state.selectedConversationId)
                     else
-                        NewChatScreen()
+                        NewChatScreen(
+                            onSend = { message ->
+                                onEvent(HomeEvent.ConversationCreated(message))
+                            }
+                        )
                 }
             }
         }

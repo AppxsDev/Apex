@@ -31,7 +31,6 @@ class HomeViewModel @Inject constructor(
                     _state.update { st ->
                         st.copy(
                             conversations = conversations,
-                            selectedConversationId = st.selectedConversationId ?: conversations.firstOrNull()?.id
                         )
                     }
                     selectedId.value = _state.value.selectedConversationId
@@ -43,12 +42,10 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            HomeEvent.NewChatClicked -> createChat()
+            is HomeEvent.ConversationCreated -> createConversation(event.message)
+            is HomeEvent.NewChatClicked -> goToNewChat()
             is HomeEvent.ConversationSelected -> selectConversation(event.conversationId)
             is HomeEvent.DeleteConversation -> deleteChat(event.conversation)
-
-           // is HomeEvent.InputChanged -> _state.update { it.copy(inputText = event.text) }
-           // HomeEvent.SendClicked -> sendCurrentMessage()
         }
     }
 
@@ -57,8 +54,12 @@ class HomeViewModel @Inject constructor(
         selectedId.value = id
     }
 
-    private fun createChat() = viewModelScope.launch {
-        val id = createConversation(title = null)
+    private fun createConversation(firstMessage: String) = viewModelScope.launch {
+        val conversation = createConversation(title = null, firstMessage)
+        selectConversation(conversation.id)
+    }
+
+    private fun goToNewChat() = viewModelScope.launch {
         selectConversation(0)
     }
 
@@ -69,16 +70,4 @@ class HomeViewModel @Inject constructor(
             selectedId.value = null
         }
     }
-
-    /* private fun sendCurrentMessage() = viewModelScope.launch {
-        val id = _state.value.selectedConversationId ?: return@launch
-        val text = _state.value.inputText.trim()
-        if (text.isEmpty()) return@launch
-
-        _state.update { it.copy(inputText = "", isLoading = true, error = null) }
-
-        runCatching { sendMessage(conversationId = id, message = text) }
-            .onFailure { e -> _state.update { it.copy(error = e.message, isLoading = false) } }
-            .onSuccess { _state.update { it.copy(isLoading = false) } }
-    } */
 }

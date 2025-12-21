@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface ConversationDao {
 
     @Insert
-    suspend fun insert(entity: ConversationEntity)
+    suspend fun insert(entity: ConversationEntity) : Long
 
     @Query("SELECT * FROM conversations ORDER BY lastMessageAt DESC")
     fun getAll(): Flow<List<ConversationEntity>>

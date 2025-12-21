@@ -1,6 +1,7 @@
 package com.appxs.apex.presentation.screen.chat
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -10,9 +11,13 @@ fun ChatRoute(
     conversationId: Long,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    viewModel.setConversationId(conversationId)
+
+    LaunchedEffect(conversationId) {
+        viewModel.setConversationId(conversationId)
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     ChatScreen(
         state = state,
-    )
+        onEvent = viewModel::onEvent)
 }

@@ -13,7 +13,7 @@ fun ConversationRow(
     onClick: () -> Unit
 ) {
     NavigationDrawerItem(
-        label = { conversation.title?.let { Text(text = it) } },
+        label = { Text(text = conversation.title ?: ("Conversation " + conversation.id)) },
         selected = selectedConversationId == conversation.id,
         onClick = onClick
     )

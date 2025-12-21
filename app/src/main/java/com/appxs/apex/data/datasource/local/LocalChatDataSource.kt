@@ -10,7 +10,7 @@ class LocalChatDataSource(
     private val conversationDao: ConversationDao,
     private val messageDao: MessageDao
 ) {
-    suspend fun createConversation(conversation: ConversationEntity) {
+    suspend fun createConversation(conversation: ConversationEntity): Long {
         return conversationDao.insert(conversation)
     }
 
@@ -30,7 +30,7 @@ class LocalChatDataSource(
         return messageDao.getAllOfConversation(conversationId)
     }
 
-    suspend fun insertMessage(message: MessageEntity) {
+    suspend fun createMessage(message: MessageEntity): Long {
         return messageDao.insert(message)
     }
 }
