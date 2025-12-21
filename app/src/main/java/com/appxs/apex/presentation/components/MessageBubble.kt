@@ -19,7 +19,7 @@ import com.appxs.apex.domain.model.Sender
 @Composable
 fun MessageBubble(message: Message) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(if (message.sender == Sender.User) 16.dp else 0.dp),
         colors = CardDefaults.cardColors().copy(
             containerColor = if (message.sender == Sender.User) {
                 Color.hsl(0F, 0F, .1F)
@@ -28,10 +28,12 @@ fun MessageBubble(message: Message) {
             }
         )
     ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Column(Modifier.padding(
+            horizontal = if (message.sender == Sender.User) 16.dp else 0.dp,
+            vertical = if (message.sender == Sender.User) 12.dp else 0.dp)) {
             Text(message.text,
-                fontSize = 14.sp,
-                color = Color.hsl(0F, 0F, .95F))
+                fontSize = 15.sp,
+                color = Color.hsl(0F, 0F, .9F))
         }
     }
 }
