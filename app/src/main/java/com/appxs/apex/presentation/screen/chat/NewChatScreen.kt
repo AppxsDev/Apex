@@ -22,20 +22,23 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.appxs.apex.R
+import com.appxs.apex.presentation.components.InputWidget
 
 @Composable
-fun NewChatScreen(modifier: Modifier = Modifier) {
+fun NewChatScreen() {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.apex_logo))
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .weight(1F)
                 .offset(y = (-50).dp)
                 .padding(horizontal = 32.dp),
         ) {
@@ -57,5 +60,8 @@ fun NewChatScreen(modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center
             )
         }
+        InputWidget(
+            onSend = { message -> }
+        )
     }
 }

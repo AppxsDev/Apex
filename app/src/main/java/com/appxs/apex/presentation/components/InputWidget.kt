@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Add
@@ -33,12 +35,16 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun InputWidget() {
+fun InputWidget(
+    onSend: (message: String) -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -61,15 +67,22 @@ fun InputWidget() {
             )}
 
         }
-        InputTextWidget()
+        InputTextWidget(onSend = onSend)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputTextWidget() {
+fun InputTextWidget(onSend: (message: String) -> Unit) {
     var input by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+
+    fun handleSend() {
+        if (input.isNotBlank()) {
+            onSend(input)
+            input = ""
+        }
+    }
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
@@ -87,6 +100,12 @@ fun InputTextWidget() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
+                keyboardActions = KeyboardActions(
+                    onSend = { handleSend() }
+                ),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Send),
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .weight(1f)
@@ -103,9 +122,11 @@ fun InputTextWidget() {
                     style = TextStyle.Default.copy(fontSize = 14.sp, color = Color.hsl(0F, 0F, .65F))) },
                 onValueChange = {
                     input = it
-                }
+                },
             )
-            Icon(imageVector = Icons.AutoMirrored.Rounded.Send, contentDescription = "Send", tint = Color.hsl(0F, 0F, .9F))
+            IconButton(onClick = { handleSend() }) {
+                Icon(imageVector = Icons.AutoMirrored.Rounded.Send, contentDescription = "Send", tint = Color.hsl(0F, 0F, .9F))
+            }
         }
     }
 
@@ -117,5 +138,9 @@ fun InputTextWidget() {
 @Preview(backgroundColor = 0xFF000000, showBackground = true)
 @Composable
 private fun InputWidgetPreview() {
-    InputWidget()
+    InputWidget(
+        onSend = { message ->
+            println("Send: $message")
+        }
+    )
 }

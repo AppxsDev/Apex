@@ -17,12 +17,15 @@ class ChatRepositoryImpl(
     private val localChat: LocalChatDataSource,
     private val secureTime: SecureTimeDataSource
 ) : ChatRepository {
-    override suspend fun createConversation(title: String?) {
-        return localChat.createConversation(ConversationEntity(
+    override suspend fun createConversation(title: String?): Conversation {
+        val conversation = ConversationEntity(
             title = title,
             createdAt = secureTime.getCurrentTimeInMillis(),
             lastMessageAt = secureTime.getCurrentTimeInMillis()
-        ))
+        )
+
+        localChat.createConversation(conversation)
+        return conversation.toDomain()
     }
 
     override fun getAllConversations(): Flow<List<Conversation>> {
@@ -38,13 +41,16 @@ class ChatRepositoryImpl(
         return localChat.deleteConversation(conversation.toEntity())
     }
 
-    override suspend fun insertMessage(text: String, conversationId: Long) {
-        return localChat.insertMessage(MessageEntity(
+    override suspend fun insertMessage(text: String, conversationId: Long): Message {
+        val message = MessageEntity(
             conversationId = conversationId,
             text = text,
             sender = Sender.User.toString(),
             timestamp = secureTime.getCurrentTimeInMillis(),
-        ))
+        )
+
+        localChat.insertMessage(message)
+        return message.toDomain()
     }
 
     override fun getAllMessagesFromConversation(conversationId: Long): Flow<List<Message>> {

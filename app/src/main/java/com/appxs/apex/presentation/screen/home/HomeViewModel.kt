@@ -38,16 +38,7 @@ class HomeViewModel @Inject constructor(
                 }
         }
 
-        /* // Messages for selected conversation (auto switches)
-        viewModelScope.launch {
-            selectedId
-                .filterNotNull()
-                .distinctUntilChanged()
-                .flatMapLatest { id -> getMessages(id) }
-                .collect { messages ->
-                    _state.update { st -> st.copy(messages = messages) }
-                }
-        } */
+
     }
 
     fun onEvent(event: HomeEvent) {

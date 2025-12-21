@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.appxs.apex.domain.model.Conversation
 import com.appxs.apex.presentation.components.ConversationMenu
 import com.appxs.apex.presentation.components.InputWidget
+import com.appxs.apex.presentation.screen.chat.ChatRoute
 import com.appxs.apex.presentation.screen.chat.NewChatScreen
-import com.appxs.apex.presentation.ui.theme.ApexTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,13 +71,15 @@ fun HomeScreen(
                 // Message/content area shrinks when IME opens
                 Box(
                     modifier = Modifier
-                        .weight(1f)
                         .imePadding()
                         .fillMaxWidth()
                 ) {
-                    NewChatScreen(modifier = Modifier.fillMaxSize())
+                    if (state.selectedConversationId != null)
+                        ChatRoute(
+                            conversationId = state.selectedConversationId)
+                    else
+                        NewChatScreen()
                 }
-                InputWidget()
             }
         }
     }
@@ -87,12 +89,12 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
+        onEvent = {},
         state = HomeState(
             conversations = listOf(
                 Conversation(id = 1, title = "Sample Conversation 1", createdAt = 0L, lastMessageAt = 0L),
                 Conversation(id = 2, title = "Sample Conversation 2", createdAt = 1L, lastMessageAt = 1L)
             )
         ),
-        onEvent = {}
     )
 }
