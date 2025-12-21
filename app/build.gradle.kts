@@ -1,11 +1,30 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
     alias(libs.plugins.compose.compiler)
-    kotlin("kapt")
     alias(libs.plugins.dagger.hilt)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.google.devtools.ksp)
+}
+
+fun Project.localProperty(key: String): String {
+    val propsFile = rootProject.file("local.properties")
+    if (!propsFile.exists()) error("local.properties not found at: ${propsFile.absolutePath}")
+
+    val props = Properties().apply {
+        propsFile.inputStream().use { load(it) }
+    }
+
+    return props.getProperty(key)
+        ?: error("Missing '$key' in local.properties")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
 }
 
 android {
@@ -20,8 +39,14 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Token & Account of Ai
+        val aiToken = localProperty("ai.token")
+        val aiAccount = localProperty("ai.account")
+
+        buildConfigField("String", "AI_TOKEN", "\"$aiToken\"")
+        buildConfigField("String", "AI_ACCOUNT", "\"$aiAccount\"")
     }
 
     buildTypes {
@@ -36,15 +61,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        buildConfig = true
     }
 }
 
@@ -56,7 +77,7 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler.v261)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
     // Lifecycle
@@ -74,10 +95,17 @@ dependencies {
     implementation(libs.material)
     implementation(libs.lottie.compose)
 
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.serialization.json)
+
     // Debug only
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 }

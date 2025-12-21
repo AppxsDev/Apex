@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.appxs.apex.data.datasource.local.dao.ConversationDao
 import com.appxs.apex.data.datasource.local.dao.MessageDao
-import com.appxs.apex.data.local.AppDatabase
+import com.appxs.apex.core.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

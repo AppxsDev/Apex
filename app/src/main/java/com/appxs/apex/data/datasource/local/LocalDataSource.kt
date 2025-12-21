@@ -6,7 +6,7 @@ import com.appxs.apex.data.datasource.local.entity.ConversationEntity
 import com.appxs.apex.data.datasource.local.entity.MessageEntity
 import kotlinx.coroutines.flow.Flow
 
-class LocalChatDataSource(
+class LocalDataSource(
     private val conversationDao: ConversationDao,
     private val messageDao: MessageDao
 ) {

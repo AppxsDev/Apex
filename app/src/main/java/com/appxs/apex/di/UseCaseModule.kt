@@ -1,6 +1,8 @@
 package com.appxs.apex.di
 
+import com.appxs.apex.domain.repository.AiRepository
 import com.appxs.apex.domain.repository.ChatRepository
+import com.appxs.apex.domain.usecase.ai.SendMessageToAiUseCase
 import com.appxs.apex.domain.usecase.chat.CreateConversationUseCase
 import com.appxs.apex.domain.usecase.chat.DeleteConversationUseCase
 import com.appxs.apex.domain.usecase.chat.GetConversationsUseCase
@@ -28,4 +30,7 @@ object UseCaseModule {
 
     @Provides
     fun provideSendMessageUseCase(repo: ChatRepository) = SendMessageUseCase(repo)
+
+    @Provides
+    fun provideSendMessageToAiUseCase(repo: AiRepository) = SendMessageToAiUseCase(repo)
 }

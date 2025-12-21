@@ -1,6 +1,7 @@
 package com.appxs.apex.data.mapper
 
 import com.appxs.apex.data.datasource.local.entity.MessageEntity
+import com.appxs.apex.data.datasource.remote.dto.MessageDto
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 
@@ -19,4 +20,13 @@ fun Message.toEntity(): MessageEntity =
         text = text,
         sender = sender.name,
         timestamp = timestamp
+    )
+
+fun MessageDto.toDomain(conversationId: Long): Message =
+    Message(
+        id = 0L,
+        conversationId = conversationId,
+        text = content,
+        sender = role.toSender(),
+        timestamp = System.currentTimeMillis()
     )

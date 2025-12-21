@@ -1,7 +1,7 @@
 package com.appxs.apex.data.repository
 
 import com.appxs.apex.core.time.SecureTimeDataSource
-import com.appxs.apex.data.datasource.local.LocalChatDataSource
+import com.appxs.apex.data.datasource.local.LocalDataSource
 import com.appxs.apex.data.datasource.local.entity.ConversationEntity
 import com.appxs.apex.data.datasource.local.entity.MessageEntity
 import com.appxs.apex.data.mapper.toDomain
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ChatRepositoryImpl(
-    private val localChat: LocalChatDataSource,
+    private val localChat: LocalDataSource,
     private val secureTime: SecureTimeDataSource
 ) : ChatRepository {
     override suspend fun createConversation(title: String?, firstMessage: String): Conversation {
