@@ -1,8 +1,10 @@
 package com.appxs.apex.di
 
+import android.content.Context
 import com.appxs.apex.core.rest.RestDriver
 import com.appxs.apex.core.time.SecureTimeDataSource
 import com.appxs.apex.data.config.AIConfig
+import com.appxs.apex.data.config.AIConfigImpl
 import com.appxs.apex.data.datasource.local.LocalDataSource
 import com.appxs.apex.data.datasource.local.dao.ConversationDao
 import com.appxs.apex.data.datasource.local.dao.MessageDao
@@ -10,6 +12,7 @@ import com.appxs.apex.data.datasource.remote.RemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -34,6 +37,10 @@ object DataSourceModule {
     ): RemoteDataSource = RemoteDataSource(
         rest,
         aiConfig)
+
+    @Provides
+    @Singleton
+    fun provideAiConfig(): AIConfig = AIConfigImpl()
 
     @Provides
     @Singleton

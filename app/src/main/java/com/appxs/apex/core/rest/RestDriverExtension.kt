@@ -14,11 +14,12 @@ suspend inline fun <reified Req : Any, reified Res : Any> RestDriver.post(
     body: Req,
     headers: Map<String, String> = emptyMap(),
     query: Map<String, String> = emptyMap(),
-): RestResult<Res> =
-    post(
+): RestResult<Res> {
+    return post(
         url = url,
         body = body,
         responseType = typeInfo<Res>(),
         headers = headers,
         query = query
     )
+}

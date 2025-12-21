@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.google.devtools.ksp)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20"
 }
 
 fun Project.localProperty(key: String): String {
@@ -47,6 +48,13 @@ android {
 
         buildConfigField("String", "AI_TOKEN", "\"$aiToken\"")
         buildConfigField("String", "AI_ACCOUNT", "\"$aiAccount\"")
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] =
+                    "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -67,6 +75,10 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+hilt {
+    enableAggregatingTask = false
 }
 
 dependencies {

@@ -7,6 +7,7 @@ import com.appxs.apex.data.datasource.remote.RemoteDataSource
 import com.appxs.apex.data.datasource.remote.dto.MessageDto
 import com.appxs.apex.data.mapper.toDomain
 import com.appxs.apex.data.mapper.toEntity
+import com.appxs.apex.data.mapper.toRemote
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.repository.AiRepository
@@ -18,7 +19,7 @@ class AiRepositoryImpl(
 
     override suspend fun sendMessage(text: String, conversationId: Long): Result<Message> {
         val userMessage = MessageDto(
-            role = Sender.User.toString(),
+            role = Sender.User.toRemote(),
             content = text,
             timestamp = secureTime.getCurrentTimeInMillis()
         )
