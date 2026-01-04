@@ -23,6 +23,7 @@ import androidx.room.PrimaryKey
     val conversationId: Long,
     val text: String,
     val sender: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val feedback: String
 ) {
 }

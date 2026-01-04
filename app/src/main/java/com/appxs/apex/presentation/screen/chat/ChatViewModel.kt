@@ -2,6 +2,7 @@ package com.appxs.apex.presentation.screen.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.usecase.ai.SendMessageToAiUseCase
@@ -86,7 +87,8 @@ class ChatViewModel @Inject constructor(
                         conversationId = conversationId,
                         text = "⚠️ ${err.message ?: "Something went wrong. Please try again."}",
                         sender = Sender.Ai,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        feedback = Feedback.None
                     )
 
                     state.copy(

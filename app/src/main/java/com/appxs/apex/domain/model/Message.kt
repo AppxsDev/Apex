@@ -5,7 +5,8 @@ data class Message(
     val conversationId: Long,
     val text: String,
     val sender: Sender,
-    val timestamp: Long
+    val timestamp: Long,
+    val feedback: Feedback,
 ) {
 
 }

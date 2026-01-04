@@ -36,8 +36,6 @@ class HomeViewModel @Inject constructor(
                     selectedId.value = _state.value.selectedConversationId
                 }
         }
-
-
     }
 
     fun onEvent(event: HomeEvent) {

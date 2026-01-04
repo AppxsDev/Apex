@@ -7,6 +7,7 @@ import com.appxs.apex.data.datasource.local.entity.MessageEntity
 import com.appxs.apex.data.mapper.toDomain
 import com.appxs.apex.data.mapper.toEntity
 import com.appxs.apex.domain.model.Conversation
+import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.repository.ChatRepository
@@ -49,6 +50,7 @@ class ChatRepositoryImpl(
             text = text,
             sender = Sender.User.toString(),
             timestamp = secureTime.getCurrentTimeInMillis(),
+            feedback = Feedback.None.toString()
         )
 
         val newMessageId = localChat.createMessage(message)
