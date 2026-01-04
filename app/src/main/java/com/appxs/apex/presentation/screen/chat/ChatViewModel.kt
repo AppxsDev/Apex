@@ -7,6 +7,7 @@ import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.usecase.ai.SendMessageToAiUseCase
 import com.appxs.apex.domain.usecase.chat.GetMessagesUseCase
+import com.appxs.apex.domain.usecase.chat.GiveFeedbackUseCase
 import com.appxs.apex.domain.usecase.chat.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +25,8 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val getMessages: GetMessagesUseCase,
     private val sendMessage: SendMessageUseCase,
-    private val sendMessageToAi: SendMessageToAiUseCase
+    private val sendMessageToAi: SendMessageToAiUseCase,
+    private val giveFeedback: GiveFeedbackUseCase
 ): ViewModel() {
 
     private val conversationId = MutableStateFlow<Long?>(null)
@@ -53,8 +55,24 @@ class ChatViewModel @Inject constructor(
     fun onEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.MessageSent -> sendMessageTask(event.message)
+            is ChatEvent.GiveFeedback -> giveFeedbackTask(event.message, event.feedback)
+            ChatEvent.AiResponseReceived -> TODO()
+            ChatEvent.AiResponseShowed -> TODO()
         }
+    }
 
+
+
+    private fun giveFeedbackTask(message: Message, feedback: Feedback) = viewModelScope.launch {
+        val updatedMessage = message.copy(feedback = feedback)
+        giveFeedback(updatedMessage)
+
+        _state.update { currentState ->
+            val updatedMessages = currentState.messages.map {
+                if (it.id == updatedMessage.id) updatedMessage else it
+            }
+            currentState.copy(messages = updatedMessages)
+        }
     }
 
     private fun sendMessageTask(message: String) = viewModelScope.launch {

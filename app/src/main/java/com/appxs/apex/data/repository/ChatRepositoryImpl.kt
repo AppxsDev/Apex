@@ -61,4 +61,8 @@ class ChatRepositoryImpl(
         return localChat.getAllMessagesOfConversation(conversationId)
             .map { entities -> entities.map { it.toDomain() } }
     }
+
+    override suspend fun updateMessage(message: Message) {
+        return localChat.updateMessage(message.toEntity())
+    }
 }

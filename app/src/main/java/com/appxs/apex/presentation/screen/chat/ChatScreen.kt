@@ -49,7 +49,9 @@ fun ChatScreen(
                     if (message.sender == Sender.User) {
                         UserMessageWidget(message)
                     } else {
-                        AiMessageWidget(message)
+                        AiMessageWidget(message, onGiveFeedback = { feedback ->
+                            onEvent(ChatEvent.GiveFeedback(message, feedback))
+                        })
                     }
                 }
             }

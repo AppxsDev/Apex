@@ -33,4 +33,8 @@ class LocalDataSource(
     suspend fun createMessage(message: MessageEntity): Long {
         return messageDao.insert(message)
     }
+
+    suspend fun updateMessage(message: MessageEntity) {
+        return messageDao.update(message)
+    }
 }
