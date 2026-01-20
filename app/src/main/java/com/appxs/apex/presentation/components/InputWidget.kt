@@ -54,7 +54,6 @@ fun InputWidget(
             colors = CardDefaults.cardColors(
                 containerColor = if (enabled) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .width(48.dp)
@@ -88,7 +87,6 @@ fun InputTextWidget(
     }
 
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
             .fillMaxWidth()

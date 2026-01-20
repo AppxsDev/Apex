@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +32,7 @@ import com.appxs.apex.R
 import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
+import com.appxs.apex.presentation.util.parseMarkdown
 import kotlinx.coroutines.delay
 import java.util.Locale
 
@@ -43,11 +43,13 @@ fun AiMessageWidget(
     onEffectFinished: () -> Unit = {},
     onGiveFeedback: (Feedback) -> Unit
 ) {
-    val words = remember(message.text) { message.text.split(Regex("\\s+")) }
+    // Split by whitespace but keep newlines
+    val items = remember(message.text) { 
+        message.text.split(Regex("(?<=\\s)|(?=\\s)")).filter { it.isNotEmpty() }
+    }
     
-    // If we shouldn't show the effect or it's already read, show full text immediately
     var count by remember(message.text, shouldShowEffect, message.isRead) { 
-        mutableIntStateOf(if (shouldShowEffect && !message.isRead) 0 else words.size) 
+        mutableIntStateOf(if (shouldShowEffect && !message.isRead) 0 else items.size) 
     }
     
     var effectFinished by remember(message.text, shouldShowEffect, message.isRead) { 
@@ -77,9 +79,9 @@ fun AiMessageWidget(
         if (shouldShowEffect && !message.isRead) {
             count = 0
             effectFinished = false
-            for (i in words.indices) {
+            for (i in items.indices) {
                 count = i + 1
-                delay(80)
+                delay(40) // Reduced delay since we split more granularly
             }
             effectFinished = true
             onEffectFinished()
@@ -89,8 +91,9 @@ fun AiMessageWidget(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        val displayedText = items.take(count).joinToString("")
         Text(
-            text = words.take(count).joinToString(" "),
+            text = parseMarkdown(displayedText),
             fontSize = 16.sp
         )
         
@@ -161,10 +164,11 @@ fun AiMessageActionWidget(onClick: () -> Unit, icon: Int, description: String, e
     IconButton(
         enabled = enabled,
         onClick = onClick,
-        modifier = Modifier.size(24.dp).alpha(0.5f)) {
+        modifier = Modifier.size(24.dp)) {
         Icon(
             painter = painterResource(icon),
             contentDescription = description,
+            tint = Color.hsl(0F, 0F, .85F),
             modifier = Modifier.size(20.dp))
     }
 }
@@ -175,7 +179,7 @@ private fun UserMessageWidgetPreview() {
     AiMessageWidget(message = Message(
         id = 1,
         conversationId = 1,
-        text = "Hello, this is an long text used for example preview of Apex, the best AI of the world.",
+        text = "Hello,\nthis is a **bold text** with a jump line.",
         sender = Sender.Ai,
         feedback = Feedback.None,
         timestamp = 0),
