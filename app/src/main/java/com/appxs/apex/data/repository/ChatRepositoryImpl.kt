@@ -27,8 +27,7 @@ class ChatRepositoryImpl(
 
         val newConversationId = localChat.createConversation(conversation)
         insertMessage(firstMessage, newConversationId)
-
-        return conversation.toDomain()
+        return conversation.copy(id = newConversationId).toDomain()
     }
 
     override fun getAllConversations(): Flow<List<Conversation>> {
@@ -45,16 +44,17 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun insertMessage(text: String, conversationId: Long): Message {
-        var message = MessageEntity(
+        val message = MessageEntity(
             conversationId = conversationId,
             text = text,
             sender = Sender.User.toString(),
             timestamp = secureTime.getCurrentTimeInMillis(),
-            feedback = Feedback.None.toString()
+            feedback = Feedback.None.toString(),
+            isRead = false
         )
 
         val newMessageId = localChat.createMessage(message)
-        return message.toDomain()
+        return message.copy(id = newMessageId).toDomain()
     }
 
     override fun getAllMessagesFromConversation(conversationId: Long): Flow<List<Message>> {
@@ -64,5 +64,9 @@ class ChatRepositoryImpl(
 
     override suspend fun updateMessage(message: Message) {
         return localChat.updateMessage(message.toEntity())
+    }
+
+    override suspend fun markMessageAsRead(messageId: Long) {
+        localChat.markMessageAsRead(messageId)
     }
 }

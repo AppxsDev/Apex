@@ -13,4 +13,5 @@ interface ChatRepository {
     suspend fun insertMessage(text: String, conversationId: Long) : Message
     fun getAllMessagesFromConversation(conversationId: Long) : Flow<List<Message>>
     suspend fun updateMessage(message: Message)
+    suspend fun markMessageAsRead(messageId: Long)
 }

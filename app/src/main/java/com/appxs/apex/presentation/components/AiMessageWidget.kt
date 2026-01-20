@@ -2,6 +2,8 @@ package com.appxs.apex.presentation.components
 
 import android.content.Intent
 import android.speech.tts.TextToSpeech
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -35,10 +38,20 @@ import java.util.Locale
 @Composable
 fun AiMessageWidget(
     message: Message,
+    shouldShowEffect: Boolean = false,
+    onEffectFinished: () -> Unit = {},
     onGiveFeedback: (Feedback) -> Unit
 ) {
     val words = remember(message.text) { message.text.split(Regex("\\s+")) }
-    var count by remember(message.text) { mutableIntStateOf(0) }
+    
+    // If we shouldn't show the effect or it's already read, show full text immediately
+    var count by remember(message.text, shouldShowEffect, message.isRead) { 
+        mutableIntStateOf(if (shouldShowEffect && !message.isRead) 0 else words.size) 
+    }
+    
+    var effectFinished by remember(message.text, shouldShowEffect, message.isRead) { 
+        mutableStateOf(!(shouldShowEffect && !message.isRead)) 
+    }
 
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -59,11 +72,16 @@ fun AiMessageWidget(
         }
     }
 
-    LaunchedEffect(message.text) {
-        count = 0
-        for (i in words.indices) {
-            count = i + 1
-            delay(80)
+    LaunchedEffect(message.text, shouldShowEffect, message.isRead) {
+        if (shouldShowEffect && !message.isRead) {
+            count = 0
+            effectFinished = false
+            for (i in words.indices) {
+                count = i + 1
+                delay(80)
+            }
+            effectFinished = true
+            onEffectFinished()
         }
     }
 
@@ -72,61 +90,67 @@ fun AiMessageWidget(
     ) {
         Text(
             text = words.take(count).joinToString(" "),
-            fontSize = 16.sp,
-            color = Color.hsl(0F, 0F, .9F))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            fontSize = 16.sp
+        )
+        
+        AnimatedVisibility(
+            visible = effectFinished,
+            enter = fadeIn()
         ) {
-            AiMessageActionWidget(
-                onClick = {
-                    clipboardManager.setText(AnnotatedString(message.text))
-                },
-                icon = R.drawable.rounded_content_copy_24,
-                description = "Copy"
-            )
-            AiMessageActionWidget(
-                onClick = { 
-                    textToSpeech.speak(message.text, TextToSpeech.QUEUE_FLUSH, null, null)
-                },
-                icon = R.drawable.rounded_volume_up_24,
-                description = "Speak"
-            )
-            AiMessageActionWidget(
-                onClick = {
-                    onGiveFeedback(if (message.feedback == Feedback.Good) Feedback.None else Feedback.Good)
-                },
-                icon = if (message.feedback == Feedback.Good) R.drawable.round_thumb_up_24
-                else R.drawable.rounded_thumb_up_24,
-                description = "Like",
-                enabled = message.feedback != Feedback.Bad
-            )
-            AiMessageActionWidget(
-                onClick = {
-                    onGiveFeedback(if (message.feedback == Feedback.Bad) Feedback.None else Feedback.Bad)
-                },
-                icon = if (message.feedback == Feedback.Bad) R.drawable.round_thumb_down_24
-                else R.drawable.rounded_thumb_down_24,
-                description = "Dislike",
-                enabled = message.feedback != Feedback.Good
-            )
-            AiMessageActionWidget(
-                onClick = { 
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, message.text)
-                        type = "text/plain"
-                    }
-                    val shareIntent = Intent.createChooser(sendIntent, null)
-                    context.startActivity(shareIntent)
-                 },
-                icon = R.drawable.rounded_share_24,
-                description = "Share"
-            )
-            AiMessageActionWidget(
-                onClick = { },
-                icon = R.drawable.rounded_more_horiz_24,
-                description = "More"
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AiMessageActionWidget(
+                    onClick = {
+                        clipboardManager.setText(AnnotatedString(message.text))
+                    },
+                    icon = R.drawable.rounded_content_copy_24,
+                    description = "Copy"
+                )
+                AiMessageActionWidget(
+                    onClick = { 
+                        textToSpeech.speak(message.text, TextToSpeech.QUEUE_FLUSH, null, null)
+                    },
+                    icon = R.drawable.rounded_volume_up_24,
+                    description = "Speak"
+                )
+                AiMessageActionWidget(
+                    onClick = {
+                        onGiveFeedback(if (message.feedback == Feedback.Good) Feedback.None else Feedback.Good)
+                    },
+                    icon = if (message.feedback == Feedback.Good) R.drawable.round_thumb_up_24
+                    else R.drawable.rounded_thumb_up_24,
+                    description = "Like",
+                    enabled = message.feedback != Feedback.Bad
+                )
+                AiMessageActionWidget(
+                    onClick = {
+                        onGiveFeedback(if (message.feedback == Feedback.Bad) Feedback.None else Feedback.Bad)
+                    },
+                    icon = if (message.feedback == Feedback.Bad) R.drawable.round_thumb_down_24
+                    else R.drawable.rounded_thumb_down_24,
+                    description = "Dislike",
+                    enabled = message.feedback != Feedback.Good
+                )
+                AiMessageActionWidget(
+                    onClick = { 
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, message.text)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                     },
+                    icon = R.drawable.rounded_share_24,
+                    description = "Share"
+                )
+                AiMessageActionWidget(
+                    onClick = { },
+                    icon = R.drawable.rounded_more_horiz_24,
+                    description = "More"
+                )
+            }
         }
     }
 }

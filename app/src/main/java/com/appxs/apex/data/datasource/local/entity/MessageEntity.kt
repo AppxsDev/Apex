@@ -18,12 +18,13 @@ import androidx.room.PrimaryKey
     indices = [
         Index(value = ["conversationId"])
     ]
-)class MessageEntity(
+)
+data class MessageEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val conversationId: Long,
     val text: String,
     val sender: String,
     val timestamp: Long,
-    val feedback: String
-) {
-}
+    val feedback: String,
+    val isRead: Boolean = false
+)

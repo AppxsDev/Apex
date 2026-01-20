@@ -1,14 +1,16 @@
 package com.appxs.apex.presentation.screen.home
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -17,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
@@ -27,9 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.appxs.apex.domain.model.Conversation
 import com.appxs.apex.presentation.components.ConversationMenu
-import com.appxs.apex.presentation.components.InputWidget
 import com.appxs.apex.presentation.screen.chat.ChatRoute
 import com.appxs.apex.presentation.screen.chat.NewChatScreen
+import com.appxs.apex.presentation.ui.theme.ApexTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,44 +64,51 @@ fun HomeScreen(
                 )
             }
         ) { paddingValues ->
-            Column(
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues) // includes topBar height
-                    .windowInsetsPadding(WindowInsets.statusBars) // optional if you draw behind status bar
-                    .padding(16.dp)
+                    .padding(paddingValues)
             ) {
-                // Message/content area shrinks when IME opens
-                Box(
+                Column(
                     modifier = Modifier
-                        .imePadding()
-                        .fillMaxWidth()
+                        .fillMaxSize()
+                        // Applies safe padding for the bottom (navigation bars) and keeps 16dp margin
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
+                        .padding(16.dp)
                 ) {
-                    if (state.selectedConversationId != null)
-                        ChatRoute(
-                            conversationId = state.selectedConversationId)
-                    else
-                        NewChatScreen(
-                            onSend = { message ->
-                                onEvent(HomeEvent.ConversationCreated(message))
-                            }
-                        )
+                    Box(
+                        modifier = Modifier
+                            .imePadding()
+                            .fillMaxWidth()
+                    ) {
+                        if (state.selectedConversationId != null)
+                            ChatRoute(conversationId = state.selectedConversationId)
+                        else
+                            NewChatScreen(
+                                onSend = { message ->
+                                    onEvent(HomeEvent.ConversationCreated(message))
+                                }
+                            )
+                    }
                 }
             }
         }
     }
 }
 
-@Preview
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(
-        onEvent = {},
-        state = HomeState(
-            conversations = listOf(
-                Conversation(id = 1, title = "Sample Conversation 1", createdAt = 0L, lastMessageAt = 0L),
-                Conversation(id = 2, title = "Sample Conversation 2", createdAt = 1L, lastMessageAt = 1L)
-            )
-        ),
-    )
+    ApexTheme {
+        HomeScreen(
+            onEvent = {},
+            state = HomeState(
+                conversations = listOf(
+                    Conversation(id = 1, title = "Sample Conversation 1", createdAt = 0L, lastMessageAt = 0L),
+                    Conversation(id = 2, title = "Sample Conversation 2", createdAt = 1L, lastMessageAt = 1L)
+                )
+            ),
+        )
+    }
 }

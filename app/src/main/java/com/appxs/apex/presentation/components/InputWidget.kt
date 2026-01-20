@@ -1,6 +1,6 @@
 package com.appxs.apex.presentation.components
 
-import androidx.compose.foundation.BorderStroke
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -34,62 +35,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.appxs.apex.presentation.ui.theme.ApexTheme
 
 @Composable
 fun InputWidget(
+    enabled: Boolean = true,
     onSend: (message: String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Card(
-            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-            border = BorderStroke(width = 1.dp, color = Color.hsl(0F, 0F, .15F)),
             colors = CardDefaults.cardColors(
-                containerColor = Color.hsl(0F, 0F, .1F)
+                containerColor = if (enabled) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .width(48.dp)
                 .height(48.dp)
         ) {
-            IconButton(onClick = {}) { Icon(
+            IconButton(onClick = {}, enabled = enabled) { Icon(
                 imageVector = Icons.Rounded.Add,
                 contentDescription = "Record",
-                tint = Color.hsl(0F, 0F, .9F),
                 modifier = Modifier.size(24.dp)
             )}
 
         }
-        InputTextWidget(onSend = onSend)
+        InputTextWidget(enabled = enabled, onSend = onSend)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputTextWidget(onSend: (message: String) -> Unit) {
+fun InputTextWidget(
+    enabled: Boolean = true,
+    onSend: (message: String) -> Unit
+) {
     var input by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
     fun handleSend() {
-        if (input.isNotBlank()) {
+        if (input.isNotBlank() && enabled) {
             onSend(input)
             input = ""
         }
     }
 
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-        border = BorderStroke(width = 1.dp, color = Color.hsl(0F, 0F, .15F)),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.hsl(0F, 0F, .1F)
-        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -100,47 +99,61 @@ fun InputTextWidget(onSend: (message: String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
+                value = input,
+                onValueChange = { input = it },
+                enabled = enabled,
                 keyboardActions = KeyboardActions(
                     onSend = { handleSend() }
                 ),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Send),
+                    imeAction = ImeAction.Send
+                ),
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .weight(1f)
                     .height(48.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                textStyle = TextStyle.Default.copy(fontSize = 14.sp, color = Color.hsl(0F, 0F, .95F)),
-                value = input,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                 singleLine = true,
-                placeholder = { Text("Ask to Apex...",
-                    style = TextStyle.Default.copy(fontSize = 14.sp, color = Color.hsl(0F, 0F, .65F))) },
-                onValueChange = {
-                    input = it
+                placeholder = { 
+                    Text(
+                        "Ask to Apex...",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
+                    ) 
                 },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                )
             )
-            IconButton(onClick = { handleSend() }) {
-                Icon(imageVector = Icons.AutoMirrored.Rounded.Send, contentDescription = "Send", tint = Color.hsl(0F, 0F, .9F))
+            IconButton(onClick = { handleSend() }, enabled = enabled) {
+                Icon(imageVector = Icons.AutoMirrored.Rounded.Send, contentDescription = "Send")
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(enabled) {
+        if (enabled) {
+            focusRequester.requestFocus()
+        }
     }
 }
 
-@Preview(backgroundColor = 0xFF000000, showBackground = true)
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun InputWidgetPreview() {
-    InputWidget(
-        onSend = { message ->
-            println("Send: $message")
+    ApexTheme {
+        Card(modifier = Modifier.padding(16.dp)) {
+            InputWidget(
+                onSend = { message ->
+                    println("Send: $message")
+                }
+            )
         }
-    )
+    }
 }

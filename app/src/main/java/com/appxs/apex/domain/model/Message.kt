@@ -7,6 +7,5 @@ data class Message(
     val sender: Sender,
     val timestamp: Long,
     val feedback: Feedback,
-) {
-
-}
+    val isRead: Boolean = false,
+)

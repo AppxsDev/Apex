@@ -18,4 +18,7 @@ interface MessageDao {
 
     @Update
     suspend fun update(entity: MessageEntity)
+
+    @Query("UPDATE messages SET isRead = 1 WHERE id = :messageId")
+    suspend fun markAsRead(messageId: Long)
 }

@@ -37,4 +37,8 @@ class LocalDataSource(
     suspend fun updateMessage(message: MessageEntity) {
         return messageDao.update(message)
     }
+
+    suspend fun markMessageAsRead(messageId: Long) {
+        messageDao.markAsRead(messageId)
+    }
 }

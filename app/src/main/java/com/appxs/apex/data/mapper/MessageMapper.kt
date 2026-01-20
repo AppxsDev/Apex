@@ -13,7 +13,9 @@ fun MessageEntity.toDomain(): Message =
         text = text,
         sender = Sender.valueOf(sender),
         feedback = Feedback.valueOf(feedback),
-        timestamp = timestamp)
+        timestamp = timestamp,
+        isRead = isRead
+    )
 
 fun Message.toEntity(): MessageEntity =
     MessageEntity(
@@ -22,7 +24,8 @@ fun Message.toEntity(): MessageEntity =
         text = text,
         sender = sender.name,
         timestamp = timestamp,
-        feedback = feedback.name
+        feedback = feedback.name,
+        isRead = isRead
     )
 
 fun AiResponseDto.toDomain(conversationId: Long): Message =
@@ -32,5 +35,6 @@ fun AiResponseDto.toDomain(conversationId: Long): Message =
         text = result.response,
         sender = Sender.Ai,
         feedback = Feedback.None,
-        timestamp = System.currentTimeMillis()
+        timestamp = System.currentTimeMillis(),
+        isRead = false
     )

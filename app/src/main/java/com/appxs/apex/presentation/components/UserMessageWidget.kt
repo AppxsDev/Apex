@@ -19,17 +19,13 @@ import com.appxs.apex.domain.model.Sender
 @Composable
 fun UserMessageWidget(message: Message) {
     Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors().copy(
-            containerColor = Color.hsl(0F, 0F, .1F)
-        )
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(Modifier.padding(
             horizontal = 16.dp,
             vertical = 12.dp)) {
             Text(message.text,
-                fontSize = 16.sp,
-                color = Color.hsl(0F, 0F, .9F))
+                fontSize = 16.sp)
         }
     }
 }

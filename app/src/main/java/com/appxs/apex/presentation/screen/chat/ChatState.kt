@@ -4,5 +4,8 @@ import com.appxs.apex.domain.model.Message
 
 data class ChatState(
     val messages: List<Message> = emptyList(),
-    var isLoading: Boolean = false
-)
+    val isLoading: Boolean = false,
+    val isEffectRunning: Boolean = false
+) {
+    val isInputBlocked: Boolean get() = isLoading || isEffectRunning
+}

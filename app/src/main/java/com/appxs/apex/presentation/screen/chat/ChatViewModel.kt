@@ -8,6 +8,7 @@ import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.usecase.ai.SendMessageToAiUseCase
 import com.appxs.apex.domain.usecase.chat.GetMessagesUseCase
 import com.appxs.apex.domain.usecase.chat.GiveFeedbackUseCase
+import com.appxs.apex.domain.usecase.chat.MarkMessageAsReadUseCase
 import com.appxs.apex.domain.usecase.chat.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +27,8 @@ class ChatViewModel @Inject constructor(
     private val getMessages: GetMessagesUseCase,
     private val sendMessage: SendMessageUseCase,
     private val sendMessageToAi: SendMessageToAiUseCase,
-    private val giveFeedback: GiveFeedbackUseCase
+    private val giveFeedback: GiveFeedbackUseCase,
+    private val markMessageAsRead: MarkMessageAsReadUseCase
 ): ViewModel() {
 
     private val conversationId = MutableStateFlow<Long?>(null)
@@ -56,12 +58,14 @@ class ChatViewModel @Inject constructor(
         when (event) {
             is ChatEvent.MessageSent -> sendMessageTask(event.message)
             is ChatEvent.GiveFeedback -> giveFeedbackTask(event.message, event.feedback)
-            ChatEvent.AiResponseReceived -> TODO()
-            ChatEvent.AiResponseShowed -> TODO()
+            is ChatEvent.MessageEffectFinished -> markAsReadTask(event.messageId)
         }
     }
 
-
+    private fun markAsReadTask(messageId: Long) = viewModelScope.launch {
+        markMessageAsRead(messageId)
+        _state.update { it.copy(isEffectRunning = false) }
+    }
 
     private fun giveFeedbackTask(message: Message, feedback: Feedback) = viewModelScope.launch {
         val updatedMessage = message.copy(feedback = feedback)
@@ -76,42 +80,29 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun sendMessageTask(message: String) = viewModelScope.launch {
-        val conversationId = conversationId.value ?: return@launch
+        val currentConversationId = conversationId.value ?: return@launch
 
-        // Save the message of the user first
-        val userMessage = sendMessage(message, conversationId)
-        _state.update { state ->
-            state.copy(
-                messages = state.messages + userMessage
-            )
-        }
-
-        // Lock user interaction once we have response from the AI
+        // Lock user interaction immediately
         _state.update { it.copy(isLoading = true) }
 
+        // Save the message of the user first
+        val userMessage = sendMessage(message, currentConversationId)
+        
         // Ask to AI and handle the response
-        val aiResult: Result<Message> = sendMessageToAi(userMessage.text, conversationId)
+        val aiResult: Result<Message> = sendMessageToAi(userMessage.text, currentConversationId)
+        
         _state.update { state ->
             aiResult.fold(
                 onSuccess = { aiMsg ->
                     state.copy(
-                        messages = state.messages + aiMsg,
-                        isLoading = false
+                        isLoading = false,
+                        isEffectRunning = true // Trigger effect for the new message
                     )
                 },
                 onFailure = { err ->
-                    val errorMessage = Message(
-                        id = 0,
-                        conversationId = conversationId,
-                        text = "⚠️ ${err.message ?: "Something went wrong. Please try again."}",
-                        sender = Sender.Ai,
-                        timestamp = System.currentTimeMillis(),
-                        feedback = Feedback.None
-                    )
-
                     state.copy(
-                        messages = state.messages + errorMessage,
-                        isLoading = false
+                        isLoading = false,
+                        isEffectRunning = false
                     )
                 }
             )
