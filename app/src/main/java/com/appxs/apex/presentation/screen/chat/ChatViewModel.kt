@@ -12,6 +12,8 @@ import com.appxs.apex.domain.usecase.chat.MarkMessageAsReadUseCase
 import com.appxs.apex.domain.usecase.chat.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,6 +37,8 @@ class ChatViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ChatState())
     val state: StateFlow<ChatState> = _state
+
+    private var thinkingJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -83,7 +87,14 @@ class ChatViewModel @Inject constructor(
         val currentConversationId = conversationId.value ?: return@launch
 
         // Lock user interaction immediately
-        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(isLoading = true, showThinking = false) }
+
+        // Trigger "Thinking..." after 1 second
+        thinkingJob?.cancel()
+        thinkingJob = viewModelScope.launch {
+            delay(1000)
+            _state.update { it.copy(showThinking = true) }
+        }
 
         // Save the message of the user first
         val userMessage = sendMessage(message, currentConversationId)
@@ -91,17 +102,20 @@ class ChatViewModel @Inject constructor(
         // Ask to AI and handle the response
         val aiResult: Result<Message> = sendMessageToAi(userMessage.text, currentConversationId)
         
+        thinkingJob?.cancel()
         _state.update { state ->
             aiResult.fold(
                 onSuccess = { aiMsg ->
                     state.copy(
                         isLoading = false,
+                        showThinking = false,
                         isEffectRunning = true // Trigger effect for the new message
                     )
                 },
                 onFailure = { err ->
                     state.copy(
                         isLoading = false,
+                        showThinking = false,
                         isEffectRunning = false
                     )
                 }

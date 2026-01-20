@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
@@ -37,6 +41,23 @@ fun ChatScreen(
             modifier = Modifier
                 .weight(1F)
         ) {
+            if (state.showThinking) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 32.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Text(
+                            text = "Thinking...",
+                            modifier = Modifier.alpha(0.5f),
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                        )
+                    }
+                }
+            }
+
             itemsIndexed(state.messages) { index, message ->
                 val isLastMessage = index == 0 // Since reverseLayout = true
                 Row(
@@ -78,11 +99,10 @@ private fun ChatScreenPreview() {
         ChatScreen(
             onEvent = {},
             state = ChatState(
+                showThinking = true,
                 messages = listOf(
                     Message(id = 1, conversationId = 1, text = "Hello Apex AI. Can you help me? I have a lot of questions for you and I want you to solve them all please :)", sender = Sender.User, timestamp = 0, feedback = Feedback.None),
                     Message(id = 2, conversationId = 1, text = "Hi there! Sure, just ask me everything you want and i'll answer your questions with the speed of the light because I am the best AI", sender = Sender.Ai, timestamp = 10, feedback = Feedback.None),
-                    Message(id = 3, conversationId = 1, text = "Yes? Then les see it. Who's Juice Wrld?", sender = Sender.User, timestamp = 20, feedback = Feedback.None),
-                    Message(id = 4, conversationId = 1, text = "Juice Wrld? The goat of rappers, but he died young but leyends never die. LLJW999", sender = Sender.Ai, timestamp = 30, feedback = Feedback.None),
                 ).reversed()
             )
         )

@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun selectConversation(id: Long) {
+    private fun selectConversation(id: Long?) {
         _state.update { it.copy(selectedConversationId = id) }
         selectedId.value = id
     }
@@ -58,7 +58,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun goToNewChat() = viewModelScope.launch {
-        selectConversation(0)
+        selectConversation(null)
     }
 
     private fun deleteChat(conversation: Conversation) = viewModelScope.launch {
