@@ -28,6 +28,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,12 +48,16 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     ConversationMenu(
         selectedConversationId = state.selectedConversationId,
         conversations = state.conversations,
         drawerState = drawerState,
-        onConversationClick = { onEvent(HomeEvent.ConversationSelected(it.id)) }
+        onConversationClick = { conversation ->
+            onEvent(HomeEvent.ConversationSelected(conversation.id))
+            scope.launch { drawerState.close() }
+        }
     ) {
         Scaffold(
             modifier = Modifier.imePadding(),
@@ -61,7 +66,10 @@ fun HomeScreen(
                 TopAppBar(
                     title = { Text("Chat") },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        IconButton(onClick = { 
+                            keyboardController?.hide()
+                            scope.launch { drawerState.open() } 
+                        }) {
                             Icon(Icons.Default.Menu, contentDescription = null)
                         }
                     },
@@ -89,13 +97,13 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
+                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
+
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        // Applies safe padding for the bottom (navigation bars) and keeps 16dp margin
-                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
-                        .padding(16.dp)
+                        .padding(start = 16.dp, bottom = 16.dp, end = 16.dp)
                 ) {
                     Box(
                         modifier = Modifier
