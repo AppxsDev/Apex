@@ -18,6 +18,10 @@ class LocalDataSource(
         return conversationDao.getAll()
     }
 
+    suspend fun getConversation(id: Long): ConversationEntity? {
+        return conversationDao.getById(id)
+    }
+
     suspend fun updateConversation(conversation: ConversationEntity) {
         return conversationDao.update(conversation)
     }

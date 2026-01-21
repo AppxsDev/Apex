@@ -12,7 +12,10 @@ import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
 import com.appxs.apex.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 
 class ChatRepositoryImpl(
     private val localChat: LocalDataSource,
@@ -33,6 +36,14 @@ class ChatRepositoryImpl(
     override fun getAllConversations(): Flow<List<Conversation>> {
         return localChat.getAllConversations()
             .map { entities -> entities.map { it.toDomain() } }
+    }
+
+    override fun getConversation(id: Long): Flow<Conversation?> {
+        return localChat.getAllConversations()
+            .map { conversations ->
+                conversations.find { it.id == id }?.toDomain()
+            }
+            .distinctUntilChanged()
     }
 
     override suspend fun updateConversation(conversation: Conversation) {
