@@ -30,6 +30,7 @@ fun ChatScreen(
     state: ChatState,
     onEvent: (ChatEvent) -> Unit
 ) {
+
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),

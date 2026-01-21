@@ -43,6 +43,7 @@ fun ConversationMenu(
     selectedConversationId: Long?,
     conversations: List<Conversation>,
     drawerState: DrawerState,
+    onNewConversation: () -> Unit,
     onConversationClick: (Conversation) -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -98,7 +99,7 @@ fun ConversationMenu(
                         modifier = Modifier.size(48.dp)
                     ) {
                         IconButton(
-                            onClick = { /* Handle New Chat */ },
+                            onClick = onNewConversation,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
@@ -140,6 +141,7 @@ private fun ConversationMenuPreview() {
         selectedConversationId = null,
         conversations = sampleConversations,
         drawerState = drawerState,
-        onConversationClick = {}
+        onConversationClick = {},
+        onNewConversation = {}
     ) {}
 }

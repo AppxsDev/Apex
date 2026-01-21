@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import com.appxs.apex.R
 import com.appxs.apex.domain.model.Conversation
 import com.appxs.apex.presentation.components.ConversationMenu
-import com.appxs.apex.presentation.screen.chat.ChatRoute
 import com.appxs.apex.presentation.screen.chat.NewChatScreen
 import com.appxs.apex.presentation.ui.theme.ApexTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +55,10 @@ fun HomeScreen(
         selectedConversationId = state.selectedConversationId,
         conversations = state.conversations,
         drawerState = drawerState,
+        onNewConversation = {
+            onNewConversation(onEvent)
+            scope.launch { drawerState.close() }
+        },
         onConversationClick = { conversation ->
             onEvent(HomeEvent.ConversationSelected(conversation.id))
             scope.launch { drawerState.close() }
@@ -76,7 +80,7 @@ fun HomeScreen(
                     },
                     actions = {
                         if (state.selectedConversationId != null) {
-                            IconButton(onClick = { onEvent(HomeEvent.NewChatClicked) }) {
+                            IconButton(onClick = { onNewConversation(onEvent) }) {
                                 Icon(Icons.Default.Add, contentDescription = null)
                             }
                             IconButton(onClick = { }) {
@@ -126,6 +130,10 @@ fun HomeScreen(
             }
         }
     }
+}
+
+fun onNewConversation(onEvent: (HomeEvent) -> Unit) {
+    onEvent(HomeEvent.NewChatClicked)
 }
 
 @Preview(name = "Light Mode", showBackground = true)

@@ -12,9 +12,9 @@ class RemoteDataSource(
     private val rest: RestDriver,
     private val aiConfig: AIConfig) {
     
-    suspend fun sendMessage(messageDto: MessageDto): RestResult<AiResponseDto> {
+    suspend fun sendMessage(messages: List<MessageDto>): RestResult<AiResponseDto> {
         val aiRequest = AiRequestDto(
-            messages = listOf(messageDto)
+            messages = messages
         )
 
         return rest.post(

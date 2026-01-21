@@ -100,7 +100,8 @@ class ChatViewModel @Inject constructor(
         }
 
         // Ask AI (user message already saved by CreateConversationUseCase)
-        val aiResult: Result<Message> = sendMessageToAi(message, convId)
+        // For the first message, history is empty
+        val aiResult: Result<Message> = sendMessageToAi(message, convId, emptyList())
 
         thinkingJob?.cancel()
         _state.update { st ->
@@ -136,11 +137,14 @@ class ChatViewModel @Inject constructor(
             _state.update { it.copy(showThinking = true) }
         }
 
+        // Get history before saving the new user message
+        val history = _state.value.messages
+
         // Save the message of the user first
         val userMessage = sendMessage(message, currentConversationId)
         
         // Ask to AI and handle the response
-        val aiResult: Result<Message> = sendMessageToAi(userMessage.text, currentConversationId)
+        val aiResult: Result<Message> = sendMessageToAi(userMessage.text, currentConversationId, history)
         
         thinkingJob?.cancel()
         _state.update { state ->

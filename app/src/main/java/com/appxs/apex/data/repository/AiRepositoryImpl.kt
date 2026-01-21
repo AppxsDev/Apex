@@ -17,14 +17,32 @@ class AiRepositoryImpl(
     private val localChat: LocalDataSource,
     private val secureTime: SecureTimeDataSource): AiRepository {
 
-    override suspend fun sendMessage(text: String, conversationId: Long): Result<Message> {
-        val userMessage = MessageDto(
-            role = Sender.User.toRemote(),
-            content = text,
-            timestamp = secureTime.getCurrentTimeInMillis()
+    override suspend fun sendMessage(text: String, conversationId: Long, history: List<Message>): Result<Message> {
+        val currentTime = secureTime.getCurrentTimeInMillis()
+        
+        val systemMessage = MessageDto(
+            role = "system",
+            content = "Your name is Apex. You must answer clearly as much as possible. You must answer in the same language of the user. You are a helpful assistant.",
+            timestamp = currentTime
         )
 
-        return when (val res = remoteChat.sendMessage(userMessage)) {
+        val historyDtos = history.map { 
+            MessageDto(
+                role = if (it.sender == Sender.User) "user" else "assistant",
+                content = it.text,
+                timestamp = it.timestamp
+            )
+        }
+
+        val userMessage = MessageDto(
+            role = "user",
+            content = text,
+            timestamp = currentTime
+        )
+
+        val allMessages = listOf(systemMessage) + historyDtos + userMessage
+
+        return when (val res = remoteChat.sendMessage(allMessages)) {
             is RestResult.Success -> {
                 val aiResponse = res.value.toDomain(conversationId)
                 localChat.createMessage(aiResponse.toEntity())
