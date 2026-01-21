@@ -25,7 +25,7 @@ fun UserMessageWidget(message: Message) {
             horizontal = 16.dp,
             vertical = 12.dp)) {
             Text(message.text,
-                fontSize = 16.sp)
+                fontSize = 14.sp)
         }
     }
 }

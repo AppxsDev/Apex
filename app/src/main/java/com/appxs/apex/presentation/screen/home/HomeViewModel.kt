@@ -47,6 +47,7 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.NewChatClicked -> goToNewChat()
             is HomeEvent.ConversationSelected -> selectConversation(event.conversationId)
             is HomeEvent.DeleteConversation -> deleteChat(event.conversation)
+            is HomeEvent.ChangedTemporalConversation -> _state.update { it.copy(temporal = !it.temporal) }
         }
     }
 

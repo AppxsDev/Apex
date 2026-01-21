@@ -7,4 +7,6 @@ sealed interface HomeEvent {
     data class ConversationCreated(val message: String) : HomeEvent
     data class ConversationSelected(val conversationId: Long) : HomeEvent
     data class DeleteConversation(val conversation: Conversation) : HomeEvent
+    data object ChangedTemporalConversation : HomeEvent
+
 }

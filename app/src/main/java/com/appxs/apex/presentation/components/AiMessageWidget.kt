@@ -95,7 +95,7 @@ fun AiMessageWidget(
         val displayedText = items.take(count).joinToString("")
         Text(
             text = parseMarkdown(displayedText),
-            fontSize = 16.sp
+            fontSize = 14.sp
         )
         
         AnimatedVisibility(
