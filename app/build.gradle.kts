@@ -118,6 +118,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 }
