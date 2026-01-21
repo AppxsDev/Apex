@@ -83,6 +83,46 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun sendFirstMessageToAi(conversationId: Long, firstMessage: String) {
+        setConversationId(conversationId)
+        sendToAiOnlyTask(firstMessage, conversationId)
+    }
+
+    private fun sendToAiOnlyTask(message: String, convId: Long) = viewModelScope.launch {
+        // Lock user interaction immediately
+        _state.update { it.copy(isLoading = true, showThinking = false) }
+
+        // Trigger "Thinking..." after 1 second
+        thinkingJob?.cancel()
+        thinkingJob = viewModelScope.launch {
+            delay(1000)
+            _state.update { it.copy(showThinking = true) }
+        }
+
+        // Ask AI (user message already saved by CreateConversationUseCase)
+        val aiResult: Result<Message> = sendMessageToAi(message, convId)
+
+        thinkingJob?.cancel()
+        _state.update { st ->
+            aiResult.fold(
+                onSuccess = {
+                    st.copy(
+                        isLoading = false,
+                        showThinking = false,
+                        isEffectRunning = true
+                    )
+                },
+                onFailure = {
+                    st.copy(
+                        isLoading = false,
+                        showThinking = false,
+                        isEffectRunning = false
+                    )
+                }
+            )
+        }
+    }
+
     private fun sendMessageTask(message: String) = viewModelScope.launch {
         val currentConversationId = conversationId.value ?: return@launch
 

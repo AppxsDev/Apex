@@ -9,7 +9,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun ChatRoute(
     conversationId: Long,
-    viewModel: ChatViewModel = hiltViewModel()
+    viewModel: ChatViewModel
 ) {
 
     LaunchedEffect(conversationId) {

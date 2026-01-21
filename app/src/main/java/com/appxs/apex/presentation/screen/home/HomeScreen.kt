@@ -44,7 +44,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     state: HomeState,
-    onEvent: (HomeEvent) -> Unit
+    onEvent: (HomeEvent) -> Unit,
+    chatContent: @Composable (Long) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -110,14 +111,16 @@ fun HomeScreen(
                             .imePadding()
                             .fillMaxWidth()
                     ) {
-                        if (state.selectedConversationId != null)
-                            ChatRoute(conversationId = state.selectedConversationId)
-                        else
+                        val selectedId = state.selectedConversationId
+                        if (selectedId != null) {
+                            chatContent(selectedId)
+                        } else {
                             NewChatScreen(
                                 onSend = { message ->
                                     onEvent(HomeEvent.ConversationCreated(message))
                                 }
                             )
+                        }
                     }
                 }
             }
@@ -132,6 +135,7 @@ private fun HomeScreenPreview() {
     ApexTheme {
         HomeScreen(
             onEvent = {},
+            chatContent = { },
             state = HomeState(
                 conversations = listOf(
                     Conversation(id = 1, title = "Sample Conversation 1", createdAt = 0L, lastMessageAt = 0L),

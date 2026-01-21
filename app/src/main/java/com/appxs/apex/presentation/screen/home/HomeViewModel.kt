@@ -7,8 +7,11 @@ import com.appxs.apex.domain.usecase.chat.CreateConversationUseCase
 import com.appxs.apex.domain.usecase.chat.DeleteConversationUseCase
 import com.appxs.apex.domain.usecase.chat.GetConversationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,9 +55,20 @@ class HomeViewModel @Inject constructor(
         selectedId.value = id
     }
 
+    private val _effects = MutableSharedFlow<HomeEffect>(extraBufferCapacity = 1)
+    val effects: SharedFlow<HomeEffect> = _effects.asSharedFlow()
+
     private fun createConversation(firstMessage: String) = viewModelScope.launch {
         val conversation = createConversation(title = null, firstMessage)
         selectConversation(conversation.id)
+
+        _effects.tryEmit(
+            HomeEffect.SendAiForFirstMessage(
+                conversationId = conversation.id,
+                firstMessage = firstMessage
+            )
+        )
+
     }
 
     private fun goToNewChat() = viewModelScope.launch {
