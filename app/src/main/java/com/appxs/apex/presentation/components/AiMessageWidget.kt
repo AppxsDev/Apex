@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -164,11 +165,10 @@ fun AiMessageActionWidget(onClick: () -> Unit, icon: Int, description: String, e
     IconButton(
         enabled = enabled,
         onClick = onClick,
-        modifier = Modifier.size(24.dp)) {
+        modifier = Modifier.size(24.dp).alpha(0.7f)) {
         Icon(
             painter = painterResource(icon),
             contentDescription = description,
-            tint = Color.hsl(0F, 0F, .85F),
             modifier = Modifier.size(20.dp))
     }
 }

@@ -88,7 +88,9 @@ fun ChatScreen(
         }
         InputWidget(
             enabled = !state.isInputBlocked,
-            onSend = { message -> onEvent(ChatEvent.MessageSent(message))}
+            onSend = {
+                message ->
+                onEvent(ChatEvent.MessageSent(message))}
         )
     }
 }

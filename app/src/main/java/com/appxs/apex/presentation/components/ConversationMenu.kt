@@ -31,6 +31,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,8 +66,9 @@ fun ConversationMenu(
                         onValueChange = { },
                         placeholder = { 
                             Text(
-                                "Search...", 
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
+                                "Search...",
+                                modifier = Modifier.alpha(0.75f),
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp)
                             ) 
                         },
                         leadingIcon = { 
@@ -81,6 +83,7 @@ fun ConversationMenu(
                             .height(48.dp),
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.colors(
+                            cursorColor = MaterialTheme.colorScheme.onPrimary,
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedIndicatorColor = Color.Transparent,
@@ -88,7 +91,7 @@ fun ConversationMenu(
                             disabledIndicatorColor = Color.Transparent
                         ),
                         singleLine = true,
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp)
                     )
 
                     Card(

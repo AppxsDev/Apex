@@ -32,9 +32,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,9 +81,11 @@ fun InputTextWidget(
 ) {
     var input by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val haptic = LocalHapticFeedback.current
 
     fun handleSend() {
         if (input.isNotBlank() && enabled) {
+            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
             onSend(input)
             input = ""
         }
@@ -93,7 +98,7 @@ fun InputTextWidget(
             .height(48.dp)
     ) {
         Row(
-            Modifier.padding(end = 16.dp),
+            Modifier.padding(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
@@ -111,15 +116,17 @@ fun InputTextWidget(
                     .focusRequester(focusRequester)
                     .weight(1f)
                     .height(48.dp),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
                 singleLine = true,
                 placeholder = { 
                     Text(
                         "Ask to Apex...",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
+                        modifier = Modifier.alpha(0.75f),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp)
                     ) 
                 },
                 colors = TextFieldDefaults.colors(
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
