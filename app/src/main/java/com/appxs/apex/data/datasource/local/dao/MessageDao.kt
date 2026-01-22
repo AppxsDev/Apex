@@ -14,7 +14,7 @@ interface MessageDao {
     suspend fun insert(entity: MessageEntity) : Long
 
     @Query("SELECT * FROM messages WHERE conversationId = :conversationId ORDER BY timestamp DESC")
-    fun getAllOfConversation(conversationId: Long): Flow<List<MessageEntity>>
+    fun getAllMessagesOfConversation(conversationId: Long): Flow<List<MessageEntity>>
 
     @Update
     suspend fun update(entity: MessageEntity)

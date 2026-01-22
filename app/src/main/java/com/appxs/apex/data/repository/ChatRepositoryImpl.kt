@@ -7,6 +7,7 @@ import com.appxs.apex.data.datasource.local.entity.MessageEntity
 import com.appxs.apex.data.mapper.toDomain
 import com.appxs.apex.data.mapper.toEntity
 import com.appxs.apex.domain.model.Conversation
+import com.appxs.apex.domain.model.ConversationType
 import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
@@ -21,11 +22,12 @@ class ChatRepositoryImpl(
     private val localChat: LocalDataSource,
     private val secureTime: SecureTimeDataSource
 ) : ChatRepository {
-    override suspend fun createConversation(title: String?, firstMessage: String): Conversation {
+    override suspend fun createConversation(title: String?, firstMessage: String, type: ConversationType): Conversation {
         val conversation = ConversationEntity(
             title = title,
             createdAt = secureTime.getCurrentTimeInMillis(),
-            lastMessageAt = secureTime.getCurrentTimeInMillis()
+            lastMessageAt = secureTime.getCurrentTimeInMillis(),
+            type = type.name
         )
 
         val newConversationId = localChat.createConversation(conversation)
@@ -79,5 +81,9 @@ class ChatRepositoryImpl(
 
     override suspend fun markMessageAsRead(messageId: Long) {
         localChat.markMessageAsRead(messageId)
+    }
+
+    override suspend fun deleteTemporalConversations() {
+        return localChat.deleteTemporalConversations()
     }
 }

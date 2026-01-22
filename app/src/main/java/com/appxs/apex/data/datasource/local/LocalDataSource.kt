@@ -31,7 +31,7 @@ class LocalDataSource(
     }
 
     fun getAllMessagesOfConversation(conversationId: Long) : Flow<List<MessageEntity>> {
-        return messageDao.getAllOfConversation(conversationId)
+        return messageDao.getAllMessagesOfConversation(conversationId)
     }
 
     suspend fun createMessage(message: MessageEntity): Long {
@@ -44,5 +44,9 @@ class LocalDataSource(
 
     suspend fun markMessageAsRead(messageId: Long) {
         messageDao.markAsRead(messageId)
+    }
+
+    suspend fun deleteTemporalConversations() {
+        conversationDao.deleteTemporal()
     }
 }

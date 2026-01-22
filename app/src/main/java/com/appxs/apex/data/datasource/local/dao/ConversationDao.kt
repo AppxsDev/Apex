@@ -14,7 +14,7 @@ interface ConversationDao {
     @Insert
     suspend fun insert(entity: ConversationEntity) : Long
 
-    @Query("SELECT * FROM conversations ORDER BY lastMessageAt DESC")
+    @Query("SELECT * FROM conversations WHERE type = 'Saved' ORDER BY lastMessageAt DESC")
     fun getAll(): Flow<List<ConversationEntity>>
 
     @Query("SELECT * FROM conversations WHERE id = :id")
@@ -25,4 +25,7 @@ interface ConversationDao {
 
     @Delete
     suspend fun delete(entity: ConversationEntity)
+
+    @Query("DELETE FROM conversations WHERE type = 'Temp'")
+    suspend fun deleteTemporal()
 }

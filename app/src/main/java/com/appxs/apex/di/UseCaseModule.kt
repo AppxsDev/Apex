@@ -5,6 +5,7 @@ import com.appxs.apex.domain.repository.ChatRepository
 import com.appxs.apex.domain.usecase.ai.SendMessageToAiUseCase
 import com.appxs.apex.domain.usecase.chat.CreateConversationUseCase
 import com.appxs.apex.domain.usecase.chat.DeleteConversationUseCase
+import com.appxs.apex.domain.usecase.chat.DeleteTemporalConversationsUseCase
 import com.appxs.apex.domain.usecase.chat.GetConversationsUseCase
 import com.appxs.apex.domain.usecase.chat.GetMessagesUseCase
 import com.appxs.apex.domain.usecase.chat.GiveFeedbackUseCase
@@ -38,4 +39,7 @@ object UseCaseModule {
     @Provides
     fun provideGiveFeedbackUseCase(repo: ChatRepository) = GiveFeedbackUseCase(repo)
 
+    @Provides
+    fun provideDeleteTemporalConversationsUseCase(repo: ChatRepository) =
+        DeleteTemporalConversationsUseCase(repo)
 }

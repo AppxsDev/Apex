@@ -1,11 +1,12 @@
 package com.appxs.apex.domain.repository
 
 import com.appxs.apex.domain.model.Conversation
+import com.appxs.apex.domain.model.ConversationType
 import com.appxs.apex.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
-    suspend fun createConversation(title: String?, firstMessage: String) : Conversation
+    suspend fun createConversation(title: String?, firstMessage: String, type: ConversationType) : Conversation
     fun getAllConversations() : Flow<List<Conversation>>
     fun getConversation(id: Long) : Flow<Conversation?>
     suspend fun updateConversation(conversation: Conversation)
@@ -14,4 +15,5 @@ interface ChatRepository {
     fun getAllMessagesFromConversation(conversationId: Long) : Flow<List<Message>>
     suspend fun updateMessage(message: Message)
     suspend fun markMessageAsRead(messageId: Long)
+    suspend fun deleteTemporalConversations()
 }
