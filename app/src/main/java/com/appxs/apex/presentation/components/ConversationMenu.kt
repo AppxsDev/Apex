@@ -1,6 +1,12 @@
 package com.appxs.apex.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,28 +22,33 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissibleDrawerSheet
+import androidx.compose.material3.DismissibleNavigationDrawer
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.appxs.apex.domain.model.Conversation
-import com.appxs.apex.domain.model.ConversationType
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,19 +60,34 @@ fun ConversationMenu(
     onConversationClick: (Conversation) -> Unit,
     content: @Composable () -> Unit
 ) {
-    ModalNavigationDrawer(
+    val scope = rememberCoroutineScope()
+    
+    // Animate color from black to white
+    val scrimColor by animateColorAsState(
+        targetValue = if (drawerState.targetValue != DrawerValue.Closed) Color.White else Color.Black,
+        label = "drawer_scrim_color"
+    )
+    
+    // Animate opacity up to 10%
+    val scrimAlpha by animateFloatAsState(
+        targetValue = if (drawerState.targetValue != DrawerValue.Closed) 0.1f else 0f,
+        label = "drawer_scrim_alpha"
+    )
+
+    DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            DismissibleDrawerSheet(
+                drawerTonalElevation = 8.dp,
+                modifier = Modifier
+                    .shadow(8.dp, shape = DrawerDefaults.shape)
+            ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(all = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Using TextField instead of SearchBar to have full control over the 48dp height
-                    // as SearchBar has fixed internal padding that cuts text at smaller heights.
                     TextField(
                         value = "",
                         onValueChange = { },
@@ -128,7 +154,24 @@ fun ConversationMenu(
                 }
             }
         },
-        content = content
+        content = {
+            Box(modifier = Modifier.fillMaxSize()) {
+                content()
+                if (scrimAlpha > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(scrimColor.copy(alpha = scrimAlpha))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                scope.launch { drawerState.close() }
+                            }
+                    )
+                }
+            }
+        }
     )
 }
 
@@ -147,5 +190,7 @@ private fun ConversationMenuPreview() {
         drawerState = drawerState,
         onConversationClick = {},
         onNewConversation = {}
-    ) {}
+    ) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+    }
 }

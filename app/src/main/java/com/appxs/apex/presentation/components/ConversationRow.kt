@@ -21,7 +21,7 @@ fun ConversationRow(
 ) {
     NavigationDrawerItem(
         shape = RoundedCornerShape(16.dp),
-        label = { Text(text = conversation.title ?: ("Conversation " + conversation.id), style = TextStyle(fontSize = 16.sp)) },
+        label = { Text(text = conversation.title ?: ("Conversation " + conversation.id), style = TextStyle(fontSize = 14.sp)) },
         selected = selectedConversationId == conversation.id,
         onClick = onClick,
     )
