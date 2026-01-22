@@ -2,6 +2,8 @@ package com.appxs.apex.presentation.components
 
 import android.content.Intent
 import android.speech.tts.TextToSpeech
+import android.text.method.LinkMovementMethod
+import android.widget.TextView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,19 +24,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.appxs.apex.R
 import com.appxs.apex.domain.model.Feedback
 import com.appxs.apex.domain.model.Message
 import com.appxs.apex.domain.model.Sender
-import com.appxs.apex.presentation.util.parseMarkdown
+import io.noties.markwon.Markwon
+import io.noties.markwon.image.ImagesPlugin
+import io.noties.markwon.linkify.LinkifyPlugin
 import kotlinx.coroutines.delay
 import java.util.Locale
 
@@ -93,11 +99,7 @@ fun AiMessageWidget(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         val displayedText = items.take(count).joinToString("")
-        Text(
-            text = parseMarkdown(displayedText),
-            fontSize = 14.sp
-        )
-        
+        MarkwonMarkdown(displayedText)
         AnimatedVisibility(
             visible = effectFinished,
             enter = fadeIn()
@@ -170,6 +172,41 @@ fun AiMessageActionWidget(onClick: () -> Unit, icon: Int, description: String, e
             painter = painterResource(icon),
             contentDescription = description,
             modifier = Modifier.size(20.dp))
+    }
+}
+
+@Composable
+fun MarkwonMarkdown(
+    markdown: String,
+    modifier: Modifier = Modifier,
+    markwon: Markwon = rememberMarkwon()
+) {
+
+    val color = MaterialTheme.colorScheme.onPrimary
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            TextView(context).apply {
+                setTextColor(color.toArgb())
+                textSize = 14f // sp
+                movementMethod = LinkMovementMethod.getInstance()
+            }
+        },
+        update = { textView ->
+            markwon.setMarkdown(textView, markdown)
+        }
+    )
+}
+
+@Composable
+private fun rememberMarkwon(): Markwon {
+    val context = LocalContext.current
+    return remember {
+        Markwon.builder(context)
+            .usePlugin(LinkifyPlugin.create())
+            .usePlugin(ImagesPlugin.create())
+            .build()
     }
 }
 

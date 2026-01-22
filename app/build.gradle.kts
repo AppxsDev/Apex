@@ -114,11 +114,17 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
 
+    // Markdown
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("io.noties.markwon:image:4.6.2")      // ImagesPlugin
+    implementation("io.noties.markwon:linkify:4.6.2")    // LinkifyPlugin // code blocks
+
     // Debug only
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    // Material 3 Splash Screen
+    implementation("androidx.core:core-splashscreen:1.2.0")
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
